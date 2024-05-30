@@ -17,11 +17,6 @@ Reads an image and writes a PNG image with distinct tiles (rectangles of specifi
 
 Some of the sample images are from *Commander Keen: Secret of the Oracle* and *Wolfenstein 3D* by id Software.
 
-Example (original on the left, output with default settings on the right):
-
-![Wolfenstein 3D title screen](test-in/wolf3d.png)
-![unique tiles in Wolfenstein 3D title screen](uniquetiles-wolf3d.png)
-
 ### Command line arguments
 *options* *inputFile* *outputFile*
 * *options* are any number of these, separated by spaces:
@@ -39,7 +34,12 @@ Example (original on the left, output with default settings on the right):
 * *outputFile*: Required. PNG file to write. Will contain every distinct tile in the input file once. The width will be 16 times the tile size. The height will be a multiple of tile size.
 
 ### Example
-`python3 uniquetiles.py --width 20 --height 10 input.png output.png`
+`python3 uniquetiles.py wolf3d.png wolf3d-uniquetiles.png`
+
+Before and after:
+
+![Wolfenstein 3D title screen](test-in/wolf3d.png)
+![unique tiles in Wolfenstein 3D title screen](uniquetiles-wolf3d.png)
 
 ## resize-grid
 A command line tool that reads a grid-based image and writes a PNG image with a larger grid. Each tile (rectangle) in the grid will be padded to the new size by adding the specified background color to the right and bottom edges.
@@ -67,7 +67,7 @@ A command line tool that reads a grid-based image and writes a PNG image with a 
 
 Before and after:
 
-![before](resizegrid-before.png)
-![after](resizegrid-after.png)
+![four letters in a two-by-two grid, with only a little space in between](resizegrid-before.png)
+![four letters in a two-by-two grid, with more space in between horizontally and even more vertically](resizegrid-after.png)
 
 (The images were actually 16&times;16 and 20&times;24 pixels; they've been resized to 5x their original size afterwards.)
