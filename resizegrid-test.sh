@@ -5,13 +5,13 @@ echo "xxx" > test-out/already-exists
 echo "=== Converting ==="
 python3 resizegrid.py test-in/8x8-pal.png test-out/8x8-pal.png
 python3 resizegrid.py test-in/8x8-rgb.png test-out/8x8-rgb.png
-python3 resizegrid.py test-in/8x8-rgb.png test-out/8x8-rgb-11x13-green.png --otw 11 --oth 13 --bgcolor 00ff00
+python3 resizegrid.py test-in/8x8-rgb.png test-out/8x8-rgb-11x13-green.png --ow 11 --oh 13 --bgcolor 00ff00
 echo
 
 echo "=== These should cause six distinct errors before files are opened ==="
-python3 resizegrid.py test-in/8x8-pal.png test-out/error1.png --otw 7
-python3 resizegrid.py test-in/8x8-pal.png test-out/error2.png --oth 7
-python3 resizegrid.py test-in/8x8-pal.png test-out/error3.png --otw 8 --oth 8
+python3 resizegrid.py test-in/8x8-pal.png test-out/error1.png --ow 7
+python3 resizegrid.py test-in/8x8-pal.png test-out/error2.png --oh 7
+python3 resizegrid.py test-in/8x8-pal.png test-out/error3.png --ow 8 --oh 8
 python3 resizegrid.py test-in/8x8-pal.png test-out/error4.png --bgcolor x
 python3 resizegrid.py test-in/nonexistent test-out/error5.png
 python3 resizegrid.py test-in/8x8-pal.png test-out/already-exists
@@ -24,7 +24,7 @@ python3 resizegrid.py test-in/8x8-pal.png     test-out/nonexistent/
 echo
 
 echo "=== Validating output files (using a different PNG encoder may give false errors) ==="
-md5sum -c --quiet resizegrid.md5
+md5sum -c --quiet resizegrid-test.md5
 echo
 
 rm test-out/error*.png

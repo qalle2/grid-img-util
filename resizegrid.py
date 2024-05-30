@@ -24,10 +24,10 @@ def parse_arguments():
         "for more info."
     )
 
-    parser.add_argument("--itw", type=int, default=8)
-    parser.add_argument("--ith", type=int, default=8)
-    parser.add_argument("--otw", type=int, default=9)
-    parser.add_argument("--oth", type=int, default=9)
+    parser.add_argument("--iw", type=int, default=8)
+    parser.add_argument("--ih", type=int, default=8)
+    parser.add_argument("--ow", type=int, default=9)
+    parser.add_argument("--oh", type=int, default=9)
     parser.add_argument("--bgcolor", type=str, default="000000")
 
     parser.add_argument("inputfile")
@@ -35,15 +35,15 @@ def parse_arguments():
 
     args = parser.parse_args()
 
-    intArgValues = (args.itw, args.ith, args.otw, args.oth)
-    if min(intArgValues) < 2 or max(intArgValues) > 256:
-        sys.exit("Tile widths and heights must be 2-256.")
+    intArgValues = (args.iw, args.ih, args.ow, args.oh)
+    if min(intArgValues) < 1 or max(intArgValues) > 256:
+        sys.exit("Tile widths and heights must be 1-256.")
 
-    if args.otw < args.itw:
+    if args.ow < args.iw:
         sys.exit("Output tiles must be at least as wide as input tiles.")
-    if args.oth < args.ith:
+    if args.oh < args.ih:
         sys.exit("Output tiles must be at least as tall as input tiles.")
-    if args.otw == args.itw and args.oth == args.ith:
+    if args.ow == args.iw and args.oh == args.ih:
         sys.exit(
             "Output tiles must be larger than input tiles in at least one "
             "dimension."
@@ -62,9 +62,9 @@ def convert_image(source, args):
     # source: source image
     # return: target image
 
-    if source.width == 0 or source.width % args.itw:
+    if source.width == 0 or source.width % args.iw:
         sys.exit("Image width is not a multiple of input tile width.")
-    if source.height == 0 or source.height % args.ith:
+    if source.height == 0 or source.height % args.ih:
         sys.exit("Image height is not a multiple of input tile height.")
 
     if source.mode in ("L", "P"):
@@ -75,38 +75,32 @@ def convert_image(source, args):
         )
 
     # input image width & height in tiles
-    tileColumns = source.width  // args.itw
-    tileRows    = source.height // args.ith
-
-    # pixel offset in output image (to center the tiles)
-    outputXOffset = (args.otw - args.itw) // 2
-    outputYOffset = (args.oth - args.ith) // 2
+    tileColumns = source.width  // args.iw
+    tileRows    = source.height // args.ih
 
     # create output image
     target = Image.new(
-        "RGB", (tileColumns * args.otw, tileRows * args.oth),
+        "RGB", (tileColumns * args.ow, tileRows * args.oh),
         decode_color_code(args.bgcolor)
     )
 
     # create a temporary image for copying each tile
     tileImage = Image.new(
-        "RGB", (args.itw, args.ith), decode_color_code(args.bgcolor)
+        "RGB", (args.iw, args.ih), decode_color_code(args.bgcolor)
     )
 
     for ty in range(tileRows):
         for tx in range(tileColumns):
             # copy tile from input image to temporary image
-            x = tx * args.itw
-            y = ty * args.ith
+            x = tx * args.iw
+            y = ty * args.ih
             tile = tuple(
-                source.crop((x, y, x + args.itw, y + args.ith)).getdata()
+                source.crop((x, y, x + args.iw, y + args.ih)).getdata()
             )
             tileImage.putdata(tile)
-            # copy temporary image to center of corresponding tile in output
-            # image
-            x = tx * args.otw + outputXOffset
-            y = ty * args.oth + outputYOffset
-            target.paste(tileImage, (x, y))
+            # copy temporary image to top left corner of corresponding tile in
+            # output image
+            target.paste(tileImage, (tx * args.ow, ty * args.oh))
 
     return target
 

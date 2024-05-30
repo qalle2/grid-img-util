@@ -20,10 +20,10 @@ def parse_arguments():
         "See README.md for more info."
     )
 
-    parser.add_argument("--tilewidth", type=int, default=8)
-    parser.add_argument("--tileheight", type=int, default=8)
+    parser.add_argument("--width", type=int, default=8)
+    parser.add_argument("--height", type=int, default=8)
     parser.add_argument(
-        "--tileorder", choices=("o", "p", "a", "c", "cp", "ca"), default="o"
+        "--order", choices=("o", "p", "a", "c", "cp", "ca"), default="o"
     )
     parser.add_argument("--verbose", action="store_true")
 
@@ -32,10 +32,10 @@ def parse_arguments():
 
     args = parser.parse_args()
 
-    if not 1 <= args.tilewidth <= 1024:
-        sys.exit("Tile width argument is not valid.")
-    if not 1 <= args.tileheight <= 1024:
-        sys.exit("Tile height argument is not valid.")
+    if not 1 <= args.width <= 256:
+        sys.exit("Tile width must be 1-256.")
+    if not 1 <= args.height <= 256:
+        sys.exit("Tile height must be 1-256.")
 
     if not os.path.isfile(args.inputfile):
         sys.exit("Input file not found.")
@@ -103,9 +103,7 @@ def main():
 
     try:
         with open(args.inputfile, "rb") as handle:
-            uniqueTiles = get_unique_tiles(
-                handle, args.tilewidth, args.tileheight
-            )
+            uniqueTiles = get_unique_tiles(handle, args.width, args.height)
     except OSError:
         sys.exit("Error reading input file.")
 
@@ -119,18 +117,18 @@ def main():
             "Max. unique colors/tile:", max(len(set(t)) for t in uniqueTiles)
         )
 
-    if args.tileorder == "o":
+    if args.order == "o":
         pass
-    elif args.tileorder == "p":
+    elif args.order == "p":
         uniqueTiles.sort(key=lambda t: tuple(rgb_to_grayscale(*p) for p in t))
-    elif args.tileorder == "a":
+    elif args.order == "a":
         uniqueTiles.sort(key=lambda t: sum(rgb_to_grayscale(*p) for p in t))
-    elif args.tileorder == "c":
+    elif args.order == "c":
         uniqueTiles.sort(key=lambda t: len(set(t)))
-    elif args.tileorder == "cp":
+    elif args.order == "cp":
         uniqueTiles.sort(key=lambda t: tuple(rgb_to_grayscale(*p) for p in t))
         uniqueTiles.sort(key=lambda t: len(set(t)))
-    elif args.tileorder == "ca":
+    elif args.order == "ca":
         uniqueTiles.sort(key=lambda t: sum(rgb_to_grayscale(*p) for p in t))
         uniqueTiles.sort(key=lambda t: len(set(t)))
     else:
@@ -138,7 +136,7 @@ def main():
 
     try:
         with open(args.outputfile, "wb") as handle:
-            write_image(handle, uniqueTiles, args.tilewidth, args.tileheight)
+            write_image(handle, uniqueTiles, args.width, args.height)
     except OSError:
         sys.exit("Error writing output file.")
 
