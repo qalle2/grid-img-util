@@ -1,5 +1,5 @@
 # grid-img-util
-Command-line utilities for editing grid-based (tile-based) images. Both programs require Python and the [Pillow module](https://python-pillow.org).
+Command line utilities for editing grid-based (tile-based) images. Both programs require Python and the [Pillow module](https://python-pillow.org).
 
 Table of contents:
 * [a note about the files](#a-note-about-the-files)
@@ -38,10 +38,11 @@ Example (original on the left, output with default settings on the right):
 * *inputFile*: Required. Image file to read (e.g. PNG). The width and height must be multiples of tile size. No alpha channel.
 * *outputFile*: Required. PNG file to write. Will contain every distinct tile in the input file once. The width will be 16 times the tile size. The height will be a multiple of tile size.
 
-Example: `python3 uniquetiles.py --width 20 --height 10 input.png output.png`
+### Example
+`python3 uniquetiles.py --width 20 --height 10 input.png output.png`
 
 ## resize-grid
-A command line tool that reads a grid-based image and writes another image with a larger grid. Each &ldquo;tile&rdquo; (rectangle) in the grid will be padded with the specified background color to the new size and centered (not resized).
+A command line tool that reads a grid-based image and writes a PNG image with a larger grid. Each tile (rectangle) in the grid will be padded to the new size by adding the specified background color to the right and bottom edges.
 
 ### Command line arguments
 *options* *inputFile* *outputFile*
