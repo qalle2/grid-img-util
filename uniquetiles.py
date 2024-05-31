@@ -25,10 +25,10 @@ def parse_arguments():
     parser.add_argument(
         "--order", choices=("o", "p", "a", "c", "cp", "ca"), default="o"
     )
+    parser.add_argument("--outfile", type=str, required=True)
     parser.add_argument("--verbose", action="store_true")
 
-    parser.add_argument("inputfile")
-    parser.add_argument("outputfile")
+    parser.add_argument("inputfiles", nargs="+")
 
     args = parser.parse_args()
 
@@ -37,16 +37,16 @@ def parse_arguments():
     if not 1 <= args.height <= 256:
         sys.exit("Tile height must be 1-256.")
 
-    if not os.path.isfile(args.inputfile):
-        sys.exit("Input file not found.")
-    if os.path.exists(args.outputfile):
+    for file_ in args.inputfiles:
+        if not os.path.isfile(file_):
+            sys.exit("Input file not found: " + file_)
+    if os.path.exists(args.outfile):
         sys.exit("Output file already exists.")
 
     return args
 
-def get_unique_tiles(handle, tileWidth, tileHeight):
-    # return: list of unique tuples of (red, green, blue) tuples in original
-    # order
+def get_tiles(handle, tileWidth, tileHeight):
+    # generate: tuples of (red, green, blue) tuples in original order
 
     handle.seek(0)
     image = Image.open(handle)
@@ -61,18 +61,11 @@ def get_unique_tiles(handle, tileWidth, tileHeight):
     elif image.mode != "RGB":
         sys.exit("Unrecognized pixel format (try removing the alpha channel).")
 
-    # TODO: perhaps maintain a separate set to speed up lookup?
-    uniqueTiles = []
-
     for y in range(0, image.height, tileHeight):
         for x in range(0, image.width, tileWidth):
-            tile = tuple(
+            yield tuple(
                 image.crop((x, y, x + tileWidth, y + tileHeight)).getdata()
             )
-            if tile not in uniqueTiles:
-                uniqueTiles.append(tile)
-
-    return uniqueTiles
 
 def write_image(handle, uniqueTiles, tileWidth, tileHeight):
     # write unique tiles to an image;
@@ -101,11 +94,15 @@ def rgb_to_grayscale(red, green, blue):
 def main():
     args = parse_arguments()
 
-    try:
-        with open(args.inputfile, "rb") as handle:
-            uniqueTiles = get_unique_tiles(handle, args.width, args.height)
-    except OSError:
-        sys.exit("Error reading input file.")
+    uniqueTiles = []  # a set wouldn't preserve the order
+    for file_ in args.inputfiles:
+        try:
+            with open(file_, "rb") as handle:
+                for tile in get_tiles(handle, args.width, args.height):
+                    if tile not in uniqueTiles:
+                        uniqueTiles.append(tile)
+        except OSError:
+            sys.exit("Error reading input file: " + file_)
 
     if args.verbose:
         print("Unique colors:", len(set(chain.from_iterable(uniqueTiles))))
@@ -135,7 +132,7 @@ def main():
         sys.exit("Something went wrong.")
 
     try:
-        with open(args.outputfile, "wb") as handle:
+        with open(args.outfile, "wb") as handle:
             write_image(handle, uniqueTiles, args.width, args.height)
     except OSError:
         sys.exit("Error writing output file.")
