@@ -51,7 +51,7 @@ Before and after:
 ![unique tiles in Wolfenstein 3D title screen](uniquetiles-wolf3d.png)
 
 ## resize-grid
-A command line tool that reads a grid-based image and writes a PNG image with a larger grid. Each tile (rectangle) in the grid will be padded to the new size by adding the specified background color to the right and bottom edges.
+A command line tool that reads a grid-based image and writes a PNG image with a grid of different size. Each tile (rectangle) in the grid will be padded to the new size by adding the specified background color to the right and bottom edges, or cropped to the new size by cutting off the right and bottom edges.
 
 ### Command line arguments
 *options* *inputFile* *outputFile*

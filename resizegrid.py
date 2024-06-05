@@ -1,4 +1,4 @@
-# enlarge the grid of a grid-based image
+# resize the grid of a grid-based image
 
 import argparse, os, sys
 try:
@@ -39,14 +39,10 @@ def parse_arguments():
     if min(intArgValues) < 1 or max(intArgValues) > 256:
         sys.exit("Tile widths and heights must be 1-256.")
 
-    if args.ow < args.iw:
-        sys.exit("Output tiles must be at least as wide as input tiles.")
-    if args.oh < args.ih:
-        sys.exit("Output tiles must be at least as tall as input tiles.")
     if args.ow == args.iw and args.oh == args.ih:
         sys.exit(
-            "Output tiles must be larger than input tiles in at least one "
-            "dimension."
+            "Output tile size must be different from input tile size in at "
+            "least one dimension."
         )
 
     decode_color_code(args.bgcolor)  # just validate for now
@@ -85,8 +81,10 @@ def convert_image(source, args):
     )
 
     # create a temporary image for copying each tile
+    tileWidth  = min(args.iw, args.ow)
+    tileHeight = min(args.ih, args.oh)
     tileImage = Image.new(
-        "RGB", (args.iw, args.ih), decode_color_code(args.bgcolor)
+        "RGB", (tileWidth, tileHeight), decode_color_code(args.bgcolor)
     )
 
     for ty in range(tileRows):
@@ -95,7 +93,7 @@ def convert_image(source, args):
             x = tx * args.iw
             y = ty * args.ih
             tile = tuple(
-                source.crop((x, y, x + args.iw, y + args.ih)).getdata()
+                source.crop((x, y, x + tileWidth, y + tileHeight)).getdata()
             )
             tileImage.putdata(tile)
             # copy temporary image to top left corner of corresponding tile in
