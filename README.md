@@ -37,13 +37,13 @@ Some of the sample images are from *Commander Keen: Secret of the Oracle* and *W
     * The height will be a multiple of the tile size.
 * *inputFiles*: Image files (e.g. PNG) to read.
   * One or more filenames separated by spaces.
-  * Required.
+  * At least one is required.
   * The width of each image must be a multiple of the tile width.
   * The height of each image must be a multiple of the tile height.
-  * No alpha channel.
+  * The files must not have an alpha channel.
 
 ### Example
-`python3 uniquetiles.py wolf3d.png wolf3d-uniquetiles.png`
+`python3 uniquetiles.py --outfile wolf3d-uniquetiles.png wolf3d.png`
 
 Before and after:
 

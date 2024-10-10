@@ -125,11 +125,10 @@ def main():
     elif args.order == "cp":
         uniqueTiles.sort(key=lambda t: tuple(rgb_to_grayscale(*p) for p in t))
         uniqueTiles.sort(key=lambda t: len(set(t)))
-    elif args.order == "ca":
+    else:
+        # "ca"
         uniqueTiles.sort(key=lambda t: sum(rgb_to_grayscale(*p) for p in t))
         uniqueTiles.sort(key=lambda t: len(set(t)))
-    else:
-        sys.exit("Something went wrong.")
 
     try:
         with open(args.outfile, "wb") as handle:
